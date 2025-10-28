@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create source tarball
+        run: |
+          git archive --format=tar.gz --prefix=linux-wave-${{ steps.version.outputs.version }}/ -o linux-wave-${{ steps.version.outputs.version }}.tar.gz ${{ steps.version.outputs.tag }}
+
+      - name: Generate checksums
+        run: |
+          sha256sum linux-wave-${{ steps.version.outputs.version }}.tar.gz > linux-wave-${{ steps.version.outputs.version }}.tar.gz.sha256
+          sha512sum linux-wave-${{ steps.version.outputs.version }}.tar.gz > linux-wave-${{ steps.version.outputs.version }}.tar.gz.sha512
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            linux-wave-${{ steps.version.outputs.version }}.tar.gz
+            linux-wave-${{ steps.version.outputs.version }}.tar.gz.sha256
+            linux-wave-${{ steps.version.outputs.version }}.tar.gz.sha512
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update PKGBUILD checksums (informational)
+        run: |
+          echo "::notice::Please update PKGBUILD sha256sums with the following:"
+          cat linux-wave-${{ steps.version.outputs.version }}.tar.gz.sha256
