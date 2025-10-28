@@ -2,7 +2,7 @@ package internal
 
 // Version returns the current application version
 func Version() string {
-	return "0.1.0"
+	return "0.1.1"
 }
 
 // AppName returns the application name

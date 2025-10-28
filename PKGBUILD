@@ -1,6 +1,6 @@
 # Maintainer: Vincenzo Fehring <vinfehring@gmail.com>
-pkgname=linux-wave
-pkgver=0.1.0
+pkgname=linuxwave
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Linux facial recognition authentication system with PAM integration"
 arch=('x86_64')
@@ -15,7 +15,7 @@ optdepends=(
   'gtk3: Enrollment GUI with GTK (future)'
   'qt5-base: Enrollement GUI with Qt (future)'
 )
-source=("$pkgname-$pkgver.tar.gz::https://github.com/vinisadev/linux-wave/archive/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/vinisadev/linux-wave/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 build() {

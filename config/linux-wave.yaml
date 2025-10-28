@@ -1,0 +1,133 @@
+# FaceAuth Configuration File
+# This file controls the behavior of the linux-wave authentication system
+#
+# System config: /etc/linux-wave/config.yaml (system-wide defaults)
+# User config:   ~/.config/linux-wave/config.yaml (user-specific overrides)
+#
+# User config values override system config values for overlapping settings.
+# If neither file exists, the system uses hardcoded defaults.
+
+# ============================================================================
+# Service Settings
+# ============================================================================
+service:
+  # Authentication timeout in seconds (1-60)
+  # How long to wait for face detection and authentication before timing out.
+  # Default: 10
+  timeout: 10
+
+  # Maximum retry attempts for failed authentication (1-10)
+  # Number of times a user can retry authentication before being locked out.
+  # Default: 3
+  retry_attempts: 3
+
+  # Unix domain socket path for IPC communication (must be absolute path)
+  # Used by PAM module and CLI tools to communicate with the service daemon.
+  # Default: "/run/linux-wave/auth.sock"
+  socket_path: "/run/linux-wave/auth.sock"
+
+# ============================================================================
+# Logging Settings
+# ============================================================================
+logging:
+  # Log level: DEBUG, INFO, WARN, ERROR
+  # Controls verbosity of log output.
+  # - DEBUG: Detailed diagnostic information (use for troubleshooting)
+  # - INFO: General informational messages (recommended default)
+  # - WARN: Warning messages for potentially problematic situations
+  # - ERROR: Error messages for failures that need attention
+  # Default: "INFO"
+  level: "INFO"
+
+  # Log format: json (structured), text (human-readable)
+  # - json: Machine-readable structured logs (recommended for log aggregation)
+  # - text: Human-readable format (recommended for systemd journal)
+  # Default: "text"
+  format: "text"
+
+# ============================================================================
+# Audio Feedback Settings
+# ============================================================================
+audio:
+  # Enable audio feedback for authentication events
+  # Plays sounds on successful/failed authentication for accessibility.
+  # Default: true
+  enabled: true
+
+  # Volume level (0-100)
+  # Audio playback volume percentage.
+  # 0 = muted, 100 = maximum volume
+  # Default: 50
+  volume: 50
+
+  # Custom sound files (optional, leave empty for defaults)
+  # Paths to custom WAV or OGG files for authentication feedback.
+  # If not specified, built-in sounds are used.
+
+  # Path to custom success sound file
+  # Default: "" (use built-in sound)
+  custom_sound_success: ""
+
+  # Path to custom failure sound file
+  # Default: "" (use built-in sound)
+  custom_sound_failure: ""
+
+# ============================================================================
+# Security Settings
+# ============================================================================
+# These settings control security features and will be fully implemented
+# in future stories. They are included here as placeholders.
+security:
+  # Require liveness detection (blink/movement check)
+  # Ensures the authentication subject is a live person, not a photo.
+  # Future Implementation: Story 3.1+
+  # Default: true
+  liveness_required: true
+
+  # Face matching confidence threshold (0.0-1.0)
+  # Minimum confidence score required for successful face match.
+  # Higher values = stricter matching = more secure but may reject valid users.
+  # Lower values = looser matching = more convenient but less secure.
+  # Recommended range: 0.80-0.90
+  # Future Implementation: Story 2.2+
+  # Default: 0.85
+  match_threshold: 0.85
+
+  # Maximum authentication attempts before lockout
+  # Number of failed authentication attempts before temporary lockout.
+  # Future Implementation: Story 3.8
+  # Default: 3
+  max_auth_attempts: 3
+
+  # Lockout duration in seconds
+  # How long to lock out a user after max_auth_attempts is exceeded.
+  # 300 seconds = 5 minutes (standard lockout duration)
+  # Future Implementation: Story 3.8
+  # Default: 300
+  lockout_duration: 300
+# ============================================================================
+# Configuration Tips
+# ============================================================================
+#
+# To customize your configuration:
+#
+# 1. System-wide settings (affects all users):
+#    - Copy this file to /etc/linux-wave/config.yaml
+#    - Edit values as needed (requires root/sudo)
+#    - Permissions: 0644 (world-readable, root-writable)
+#
+# 2. User-specific settings (affects only your user account):
+#    - Copy this file to ~/.config/linux-wave/config.yaml
+#    - Edit values as needed (no root required)
+#    - Permissions: 0600 (user-only read/write)
+#    - User config overrides system config
+#
+# 3. Reload configuration:
+#    - Send SIGHUP signal to linux-wave-service: sudo systemctl reload linux-wave
+#    - Or restart the service: sudo systemctl restart linux-wave
+#
+# 4. Verify configuration:
+#    - Check service status: systemctl status linux-wave
+#    - View logs: journalctl -u linux-wave -f
+#    - Test authentication: linux-wave-cli test
+#
